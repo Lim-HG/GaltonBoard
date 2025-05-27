@@ -60,6 +60,8 @@ if run:
     ani.save("galton_board.gif", writer='pillow')
 
     with open("galton_board.gif", "rb") as f:
-        data_url = f"data:image/gif;base64,{f.read().encode('base64').decode()}"
-        st.markdown(f'<img src="{data_url}" alt="갈톤 보드 애니메이션">', unsafe_allow_html=True)
+        gif_bytes = f.read()
+        b64 = base64.b64encode(gif_bytes).decode("utf-8")  # 바이트 → base64 문자열로 변환
+        data_url = f"data:image/gif;base64,{b64}"
+        st.markdown(f"<img src='{data_url}' alt='갈톤 보드 애니메이션'>", unsafe_allow_html=True)
 
