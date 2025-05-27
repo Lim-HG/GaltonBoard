@@ -4,6 +4,7 @@ import matplotlib.animation as animation
 import matplotlib.font_manager as fm
 import numpy as np
 import os
+import base64
 
 # 폰트 설정
 font_path = "NanumGothic.ttf"
@@ -59,5 +60,6 @@ if run:
     ani.save("galton_board.gif", writer='pillow')
 
     with open("galton_board.gif", "rb") as f:
-        st.image(f.read(), format="gif")
+        data_url = f"data:image/gif;base64,{f.read().encode('base64').decode()}"
+        st.markdown(f'<img src="{data_url}" alt="갈톤 보드 애니메이션">', unsafe_allow_html=True)
 
