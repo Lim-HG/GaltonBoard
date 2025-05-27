@@ -54,10 +54,9 @@ if run:
         return ball,
 
     def update(frame):
-        if frame >= len(current_path):
-            return ball,
-        x, y = current_path[frame]
-        ball.set_data(x, y)
+        if frame < len(current_path):
+            x, y = current_path[frame]
+            ball.set_data(x, y)
         return ball,
 
     # 하나의 공만 애니메이션
