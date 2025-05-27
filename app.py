@@ -14,7 +14,7 @@ plt.rcParams['font.family'] = fontprop.get_name()
 st.title("갈톤 보드 - 여러 공 애니메이션")
 
 num_levels = st.slider("핀의 층 수", 5, 15, 7)
-num_balls = st.slider("공의 수", 1, 20, 5)
+num_balls = st.slider("공의 수", 1, 100, 5)
 run = st.button("애니메이션 만들기")
 
 
