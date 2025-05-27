@@ -70,7 +70,8 @@ if run:
     frames = []
 
     # box_counts 초기화: 가능한 위치 모두 0으로 설정
-    box_counts = {round(pos, 1): 0 for pos in np.round(np.linspace(-num_levels/2, num_levels/2, num_levels+1), 1)}
+    unique_bins = sorted(set(np.round(np.linspace(-num_levels/2, num_levels/2, num_levels+1), 1).tolist() + [num_levels/2]))
+    box_counts = {round(pos, 1): 0 for pos in unique_bins}
 
     for i in range(num_balls):
         path = all_paths[i]
@@ -94,9 +95,8 @@ if run:
     st.subheader("공 도착 위치 분포")
     fig, ax = plt.subplots()
     sorted_keys = sorted(box_counts.keys())
-    # counts = [box_counts[k] for k in sorted_keys]
-    counts = box_counts
-    labels = range(1, num_levels+1)
+    counts = [box_counts.get(k, 0) for k in sorted_keys]  # 빈 상자도 0으로 표현
+    labels = [str(round(k, 1)) for k in sorted_keys]
     ax.bar(labels, counts, color='skyblue', edgecolor='black')
     ax.set_xlabel("도착 위치", fontproperties=fontprop)
     ax.set_ylabel("공의 수", fontproperties=fontprop)
