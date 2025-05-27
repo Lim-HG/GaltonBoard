@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import matplotlib.font_manager as fm
 import numpy as np
 import base64
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image
 import io
 
 # 한글 폰트 설정
@@ -24,7 +24,7 @@ def simulate_ball_path(levels):
     for level in range(1, levels + 1):
         step = np.random.choice([-0.5, 0.5])
         position += step
-        path.append((position, levels - level))  # 위 → 아래 순서로 y 감소
+        path.append((position, levels - level))
     return path
 
 
@@ -42,9 +42,7 @@ def draw_frame(all_paths, current_ball, current_step, box_counts, num_levels):
             y = num_levels - level - 0.5
             ax.plot(x, y, 'ko', markersize=4)
 
-    # 바닥 상자 (도착 위치는 num_levels+1개)
-    final_positions = [p[-1][0] for p in all_paths]
-    bins = sorted(set(final_positions + [x + 0.5 for x in final_positions]))
+    # 바닥 상자
     unique_bins = sorted(set(np.round(np.linspace(-num_levels/2, num_levels/2, num_levels+1), 1).tolist() + [num_levels/2]))
 
     for pos in unique_bins:
@@ -52,7 +50,7 @@ def draw_frame(all_paths, current_ball, current_step, box_counts, num_levels):
         count = box_counts.get(pos, 0)
         ax.text(pos, -0.6, str(count), fontsize=12, ha='center')
 
-    # 현재까지 떨어진 공 표시
+    # 공 표시
     for b in range(current_ball + 1):
         path = all_paths[b]
         if b < current_ball:
@@ -76,12 +74,11 @@ if run:
         path = all_paths[i]
         for step in range(len(path)):
             frames.append(draw_frame(all_paths, i, step, box_counts, num_levels))
-        # 마지막 위치 카운트 증가
         final_x = path[-1][0]
         box_counts[final_x] = box_counts.get(final_x, 0) + 1
         frames.append(draw_frame(all_paths, i, len(path), box_counts, num_levels))
 
-    # GIF 저장
+    # GIF 저장 (한 번만 보이도록)
     gif_path = "galton_board.gif"
     frames[0].save(gif_path, save_all=True, append_images=frames[1:], duration=300, loop=0)
 
@@ -90,3 +87,15 @@ if run:
         b64 = base64.b64encode(gif_bytes).decode("utf-8")
         data_url = f"data:image/gif;base64,{b64}"
         st.markdown(f"<img src='{data_url}' alt='갈톤 보드 애니메이션'>", unsafe_allow_html=True)
+
+    # 결과 막대 그래프 출력
+    st.subheader("공 도착 위치 분포")
+    fig, ax = plt.subplots()
+    sorted_keys = sorted(box_counts.keys())
+    counts = [box_counts[k] for k in sorted_keys]
+    labels = [str(round(k, 1)) for k in sorted_keys]
+    ax.bar(labels, counts, color='skyblue', edgecolor='black')
+    ax.set_xlabel("도착 위치", fontproperties=fontprop)
+    ax.set_ylabel("공의 수", fontproperties=fontprop)
+    ax.set_title("갈톤 보드 결과 분포", fontproperties=fontprop)
+    st.pyplot(fig)
