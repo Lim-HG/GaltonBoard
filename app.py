@@ -1,11 +1,12 @@
 import streamlit as st
 import matplotlib
-matplotlib.use("Agg")  # headless backend 설정
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import matplotlib.font_manager as fm
 import numpy as np
 import base64
+from matplotlib.animation import PillowWriter
 
 # 한글 폰트 설정
 font_path = "NanumGothic.ttf"
@@ -38,41 +39,36 @@ if run:
         ax.set_title("갈톤 보드 애니메이션", fontproperties=fontprop)
         ax.axis("off")
 
-        # 핀 고정
+        # 핀 그리기
         for level in range(num_levels):
             for pin in range(level + 1):
                 x = pin - level / 2
                 y = level + 0.5
-                ax.plot(x, y, "ko", markersize=4)
+                ax.plot(x, y, 'ko', markersize=4)
 
         ball, = ax.plot([], [], 'ro', markersize=10)
 
         def init():
             ball.set_data([], [])
-            return (ball,)
+            return [ball]
 
         def update(frame):
-            if frame < len(path):
-                x, y = path[frame]
-                ball.set_data(x, y)
-            return (ball,)
+            x, y = path[frame]
+            ball.set_data(x, y)
+            return [ball]  # 반드시 리스트 반환
 
-        # ✅ 핵심: save_count 명시 + blit=False
         ani = animation.FuncAnimation(
-            fig, update,
-            frames=len(path),
+            fig, update, frames=len(path),
             init_func=init,
-            blit=False,
-            interval=300,
-            save_count=len(path)  # ← save_count 설정 중요
+            blit=True,
+            interval=300
         )
 
-        plt.close(fig)  # Streamlit 백엔드 충돌 방지
-
         # 저장
-        ani.save("galton_board.gif", writer="pillow")
+        plt.close(fig)
+        writer = PillowWriter(fps=3)
+        ani.save("galton_board.gif", writer=writer)
 
-        # 표시
         with open("galton_board.gif", "rb") as f:
             gif_bytes = f.read()
             b64 = base64.b64encode(gif_bytes).decode("utf-8")
