@@ -95,7 +95,7 @@ if run:
     fig, ax = plt.subplots()
     sorted_keys = sorted(box_counts.keys())
     counts = [box_counts[k] for k in sorted_keys]
-    labels = [str(round(k, 1)) for k in sorted_keys]
+    labels = range(1, num_levels+1)
     ax.bar(labels, counts, color='skyblue', edgecolor='black')
     ax.set_xlabel("도착 위치", fontproperties=fontprop)
     ax.set_ylabel("공의 수", fontproperties=fontprop)
