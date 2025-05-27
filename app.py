@@ -1,40 +1,38 @@
 import streamlit as st
-import numpy as np
 import matplotlib.pyplot as plt
-from scipy.stats import norm
+import numpy as np
 import matplotlib.font_manager as fm
 
-# 한글 폰트 설정 (NanumGothic.ttf는 fonts 폴더 안에 있어야 함)
-font_path = "fonts/NanumGothic.ttf"
-font_prop = fm.FontProperties(fname=font_path)
+font_path = 'NanumGothic.ttf'  # 업로드한 ttf 파일 경로
+fontprop = fm.FontProperties(fname=font_path)
+plt.title('갈톤 보드 시뮬레이터', fontproperties=fontprop)
 
-# 제목
-st.title("정규분포 확률 계산기")
 
-# 입력값 받기
-mean = st.number_input("평균 (μ)", value=0.0)
-std_dev = st.number_input("표준편차 (σ)", value=1.0, min_value=0.01)
-a = st.number_input("구간 a", value=-1.0)
-b = st.number_input("구간 b", value=1.0)
+# 사용자 입력
+num_balls = st.slider("공의 수", min_value=10, max_value=1000, value=300, step=10)
+num_levels = st.slider("핀의 층 수", min_value=5, max_value=20, value=10, step=1)
 
-# x축 범위 및 정규분포 계산
-x = np.linspace(mean - 4*std_dev, mean + 4*std_dev, 500)
-y = norm.pdf(x, mean, std_dev)
+# 공이 지나간 경로를 저장할 리스트
+final_positions = []
 
-# 확률 계산
-p = norm.cdf(b, mean, std_dev) - norm.cdf(a, mean, std_dev)
+# 공 하나당 시뮬레이션
+for _ in range(num_balls):
+    position = 0
+    for _ in range(num_levels):
+        step = np.random.choice([0, 1])  # 0: 왼쪽, 1: 오른쪽
+        position += step
+    final_positions.append(position)
 
-# 그래프 그리기
-fig, ax = plt.subplots()
-ax.plot(x, y, label='정규분포 곡선')
-ax.fill_between(x, y, where=(x >= a) & (x <= b), color='skyblue', alpha=0.5, label=f"P({a} ≤ X ≤ {b})")
-
-# 그래프 텍스트 설정
-ax.set_title("정규분포와 누적 확률 영역", fontproperties=font_prop)
-ax.set_xlabel("x", fontproperties=font_prop)
-ax.set_ylabel("확률 밀도", fontproperties=font_prop)
-ax.legend(prop=font_prop)
-
-# 출력
+# 히스토그램 그리기
+fig, ax = plt.subplots(figsize=(8, 4))
+ax.hist(final_positions, bins=range(num_levels+2), edgecolor='black', align='left')
+ax.set_title("갈톤 보드 결과 분포")
+ax.set_xlabel("도착 위치")
+ax.set_ylabel("공의 수")
 st.pyplot(fig)
-st.write(f"✅ P({a} ≤ X ≤ {b}) = **{p:.4f}**")
+
+st.markdown("""
+**설명**:
+- 갈톤 보드는 확률과 통계에서 정규분포가 자연스럽게 나타나는 원리를 보여주는 장치입니다.
+- 공은 각 핀을 만날 때마다 좌우로 이동할 확률이 같으며, 많은 공이 떨어지면 종 모양의 분포를 형성합니다.
+""")
