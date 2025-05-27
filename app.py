@@ -14,7 +14,7 @@ plt.rcParams['font.family'] = fontprop.get_name()
 st.title("갈톤 보드 - 여러 공 애니메이션")
 
 num_levels = st.slider("핀의 층 수", 5, 15, 7)
-num_balls = st.slider("공의 수", 1, 100, 5)
+num_balls = st.slider("공의 수", 1, 20, 5)
 run = st.button("애니메이션 만들기")
 
 
@@ -68,13 +68,15 @@ def draw_frame(all_paths, current_ball, current_step, box_counts, num_levels):
 if run:
     all_paths = [simulate_ball_path(num_levels) for _ in range(num_balls)]
     frames = []
-    box_counts = {}
+
+    # box_counts 초기화: 가능한 위치 모두 0으로 설정
+    box_counts = {round(pos, 1): 0 for pos in np.round(np.linspace(-num_levels/2, num_levels/2, num_levels+1), 1)}
 
     for i in range(num_balls):
         path = all_paths[i]
         for step in range(len(path)):
             frames.append(draw_frame(all_paths, i, step, box_counts, num_levels))
-        final_x = path[-1][0]
+        final_x = round(path[-1][0], 1)
         box_counts[final_x] = box_counts.get(final_x, 0) + 1
         frames.append(draw_frame(all_paths, i, len(path), box_counts, num_levels))
 
@@ -90,7 +92,7 @@ if run:
 
     # 결과 막대 그래프 출력
     st.subheader("공 도착 위치 분포")
-    fig, ax = plt.subplots(figsize=(3, 4))
+    fig, ax = plt.subplots()
     sorted_keys = sorted(box_counts.keys())
     counts = [box_counts[k] for k in sorted_keys]
     labels = [str(round(k, 1)) for k in sorted_keys]
