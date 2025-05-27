@@ -94,7 +94,8 @@ if run:
     st.subheader("공 도착 위치 분포")
     fig, ax = plt.subplots()
     sorted_keys = sorted(box_counts.keys())
-    counts = [box_counts[k] for k in sorted_keys]
+    # counts = [box_counts[k] for k in sorted_keys]
+    counts = box_counts
     labels = range(1, num_levels+1)
     ax.bar(labels, counts, color='skyblue', edgecolor='black')
     ax.set_xlabel("도착 위치", fontproperties=fontprop)
