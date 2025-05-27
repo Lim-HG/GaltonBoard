@@ -1,11 +1,13 @@
 import streamlit as st
+import matplotlib
+matplotlib.use("Agg")  # Streamlit 환경에서 필수 설정
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import matplotlib.font_manager as fm
 import numpy as np
 import base64
 
-# 한글 폰트 설정
+# ✅ 한글 폰트 설정
 font_path = "NanumGothic.ttf"
 fontprop = fm.FontProperties(fname=font_path)
 plt.rcParams['font.family'] = fontprop.get_name()
@@ -19,7 +21,7 @@ run = st.button("시뮬레이션 시작")
 # 공 경로 생성 함수
 def simulate_ball_path(levels):
     position = 0
-    path = [(0, 0)]  # (x, y)
+    path = [(0, 0)]  # (x, y) 좌표
     for level in range(1, levels + 1):
         step = np.random.choice([-0.5, 0.5])
         position += step
@@ -43,6 +45,7 @@ if run:
             y = level + 0.5
             ax.plot(x, y, 'ko', markersize=4)
 
+    # 공 그래프 객체 생성
     ball, = ax.plot([], [], 'ro', markersize=10)
 
     def init():
@@ -54,13 +57,18 @@ if run:
         ball.set_data(x, y)
         return ball,
 
+    # 애니메이션 생성
     ani = animation.FuncAnimation(
-        fig, update, frames=len(path), init_func=init, blit=True, interval=300
+        fig, update, frames=len(path),
+        init_func=init, blit=True, interval=300
     )
 
+    plt.close(fig)  # 필수: 저장 전 figure 닫기
+
+    # gif로 저장
     ani.save("galton_board.gif", writer="pillow")
 
-    # Streamlit에서 gif로 출력
+    # Streamlit에서 표시
     with open("galton_board.gif", "rb") as f:
         gif_bytes = f.read()
         b64 = base64.b64encode(gif_bytes).decode("utf-8")
