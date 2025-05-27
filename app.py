@@ -5,8 +5,6 @@ import matplotlib.font_manager as fm
 
 font_path = 'NanumGothic.ttf'  # 업로드한 ttf 파일 경로
 fontprop = fm.FontProperties(fname=font_path)
-plt.title('갈톤 보드 시뮬레이터', fontproperties=fontprop)
-
 
 # 사용자 입력
 num_balls = st.slider("공의 수", min_value=10, max_value=1000, value=300, step=10)
@@ -26,9 +24,10 @@ for _ in range(num_balls):
 # 히스토그램 그리기
 fig, ax = plt.subplots(figsize=(8, 4))
 ax.hist(final_positions, bins=range(num_levels+2), edgecolor='black', align='left')
-ax.set_title("갈톤 보드 결과 분포")
-ax.set_xlabel("도착 위치")
-ax.set_ylabel("공의 수")
+plt.title("갈톤 보드 시뮬레이터", fontproperties=fontprop)
+plt.xlabel("도착 위치", fontproperties=fontprop)
+plt.ylabel("공의 수", fontproperties=fontprop)
+
 st.pyplot(fig)
 
 st.markdown("""
