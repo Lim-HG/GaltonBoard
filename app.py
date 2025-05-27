@@ -14,7 +14,7 @@ plt.rcParams['font.family'] = fontprop.get_name()
 st.title("갈톤 보드 - 여러 공 애니메이션")
 
 num_levels = st.slider("핀의 층 수", 5, 15, 7)
-num_balls = st.slider("공의 수", 1, 20, 5)
+num_balls = st.slider("공의 수", 1, 100, 5)
 run = st.button("애니메이션 만들기")
 
 
@@ -31,7 +31,7 @@ def simulate_ball_path(levels):
 def draw_frame(all_paths, current_ball, current_step, box_counts, num_levels):
     fig, ax = plt.subplots(figsize=(6, 6))
     max_x = num_levels / 2 + 1
-    ax.set_xlim(-max_x, max_x)
+    ax.set_xlim(-max_x - 0.5, max_x + 0.5)
     ax.set_ylim(-1, num_levels + 2)
     ax.axis('off')
 
@@ -42,9 +42,12 @@ def draw_frame(all_paths, current_ball, current_step, box_counts, num_levels):
             y = num_levels - level - 0.5
             ax.plot(x, y, 'ko', markersize=4)
 
-    # 바닥 상자
-    positions = sorted(set([p[-1][0] for p in all_paths]))
-    for i, pos in enumerate(positions):
+    # 바닥 상자 (도착 위치는 num_levels+1개)
+    final_positions = [p[-1][0] for p in all_paths]
+    bins = sorted(set(final_positions + [x + 0.5 for x in final_positions]))
+    unique_bins = sorted(set(np.round(np.linspace(-num_levels/2, num_levels/2, num_levels+1), 1).tolist() + [num_levels/2]))
+
+    for pos in unique_bins:
         ax.add_patch(plt.Rectangle((pos - 0.25, -1), 0.5, 0.8, edgecolor='black', facecolor='lightgray'))
         count = box_counts.get(pos, 0)
         ax.text(pos, -0.6, str(count), fontsize=12, ha='center')
