@@ -90,7 +90,7 @@ if run:
 
     # 결과 막대 그래프 출력
     st.subheader("공 도착 위치 분포")
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize=(3, 4))
     sorted_keys = sorted(box_counts.keys())
     counts = [box_counts[k] for k in sorted_keys]
     labels = [str(round(k, 1)) for k in sorted_keys]
